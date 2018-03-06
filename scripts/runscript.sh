@@ -1,4 +1,14 @@
 #! /bin/bash
+#
+# Copyright (c) 2016-2018 Los Alamos National Security, LLC.  All rights
+#                         reserved.
+# $COPYRIGHT$
+#
+# Additional copyrights may follow
+#
+# $HEADER$
+#
+
 # Put header for run system here
 
 OMPI_HOME=/lustre/ttscratch1/hjelmn/build/ompi/dec17
