@@ -159,8 +159,6 @@ int main(int argc,char *argv[])
         printf ("# Sync: %s\n", rmamt_sync_strings[rmamt_sync]);
         printf ("# Thread count: %u\n", (unsigned) rmamt_threads);
         printf ("# Iterations: %u\n", (unsigned) rmamt_iterations);
-        printf ("# Ibarrier: %s, sleep interval: %uns\n", rmamt_use_ibarrier ? "yes" : "no",
-                rmamt_sleep_interval);
 	printf ("# Bind worker threads: %s\n", rmamt_bind_threads ? "yes" : "no");
 	printf ("# Number of windows: %u\n", rmamt_win_per_thread ? rmamt_threads : 1);
         printf ("##########################################\n");
