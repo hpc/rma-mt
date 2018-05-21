@@ -25,6 +25,16 @@ if ( test -n "$XTOS_VERSION" || test -n "$CRAYPE_DIR" ) && (test -z $CC || test 
     if test ! -n "$LD" ; then
         LD=ld
     fi
+
+    AC_MSG_CHECKING([for craypich])
+    if test -n "$CRAY_MPICH2_DIR" ; then
+        AC_MSG_RESULT([yes])
+        CPPFLAGS="$CPPFLAGS -I$CRAY_MPICH2_DIR/include"
+        LDFLAGS="$LDFLAGS -L$CRAY_MPICH2_DIR/lib"
+        LIBS="$LIBS -lmpich"
+    else
+        AC_MSG_RESULT([no])
+    fi
 elif test ${MPICC} = "mpicc" ; then
     CC=${MPICC}
     CXX=${MPICXX}
