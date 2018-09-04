@@ -50,17 +50,22 @@ typedef volatile long atomic_long;
 
 typedef struct arg_struct {
     MPI_Win win;
+    MPI_Comm comm;
     int tid;
     size_t max_size;
     size_t min_size;
     MPI_Group group;
     int target;
+    bool do_sync;
+    bool do_init;
+    bool all_sync;
 } ArgStruct;
 
 typedef void *(*rmamt_fn_t) (ArgStruct *);
 
 static atomic_long current_value;
 static long barrier_value;
+static volatile _Atomic long current_cycle = 0;
 
 static void thread_barrier_init (int value)
 {
@@ -70,21 +75,22 @@ static void thread_barrier_init (int value)
 
 static void thread_barrier (int cycle)
 {
-    static atomic_long current_cycle = ATOMIC_VAR_INIT(0);
     long tmp;
 
     /* wait for the expected cycle */
-    while (cycle > atomic_load (&current_cycle));
+    while (cycle > current_cycle);
 
     /* decrement the counter */
     tmp = atomic_fetch_add (&current_value, -1);
     if (2 == tmp) {
         /* this thread was the last one. reset the counter and increment the cycle */
-	atomic_init (&current_value, barrier_value);
-	atomic_fetch_add (&current_cycle, 1);
+        atomic_init (&current_value, barrier_value);
+
+        /* only one thread will modify the cycle at any time so atomics are not needed*/
+        ++current_cycle;
     } else {
         /* wait for cycle increment */
-	while (cycle == atomic_load (&current_cycle));
+        while (cycle == current_cycle);
     }
 }
 

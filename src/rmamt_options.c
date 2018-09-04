@@ -26,6 +26,11 @@ char *rmamt_sync_strings[] = {
     [RMAMT_LOCK] = "lock",
     [RMAMT_FLUSH] = "flush",
     [RMAMT_PSCW] = "pscw",
+    [RMAMT_ALL_FLUSH] = "all_flush",
+    [RMAMT_FLUSH_ALL] = "flush_all",
+    [RMAMT_FLUSH_LOCAL] = "flush_local",
+    [RMAMT_FLUSH_LOCAL_ALL] = "flush_local_all",
+    [RMAMT_SYNC_MAX] = NULL,
 };
 
 bool rmamt_win_per_thread = false;
@@ -48,10 +53,11 @@ static void print_usage (const char *name, bool failure)
 
     if (0 == rank) {
 	printf ("RMA-MT Multi-threaded MPI-3 One-sided benchmarks\n\n"
-		"Usage: %s [-wn] [-t <value>] [-s <value>] [-i <value>] <-o put|get> <-s lock_all|fence|lock|flush|pscw\n\n"
+		"Usage: %s [-wn] [-t <value>] [-s <value>] [-i <value>] <-o put|get> <-s lock_all|fence|lock|flush|pscw|all_flush\n\n"
 		"Options:\n\n"
 		" -o,--operation=value      Operation to benchmark: put, get\n"
-		" -s,--sync=value           Synchronization function to use: lock_all, fence, lock, flush, pscw\n"
+		" -s,--sync=value           Synchronization function to use: lock_all, fence, lock, flush,\n"
+		"                           pscw, all_flush, flush_all, flush_local, flush_local_all\n"
 		" -m, --max-size=value      Maximum aggregate transfer size\n"
 		" -l, --min-size=value      Minimum aggregate transfer size\n"
 		" -w,--win-per-thread       Use a different MPI window in each thread\n"
@@ -112,17 +118,16 @@ int rmamt_parse_options (const char *name, int argc, char *argv[])
 	    }
 	    break;
 	case 's':
-	    if (0 == strcasecmp (optarg, "lock_all")) {
-		rmamt_sync = RMAMT_LOCK_ALL;
-	    } else if (0 == strcasecmp (optarg, "fence")) {
-		rmamt_sync = RMAMT_FENCE;
-	    } else if (0 == strcasecmp (optarg, "lock")) {
-		rmamt_sync = RMAMT_LOCK;
-	    } else if (0 == strcasecmp (optarg, "flush")) {
-		rmamt_sync = RMAMT_FLUSH;
-	    } else if (0 == strcasecmp (optarg, "pscw")) {
-		rmamt_sync = RMAMT_PSCW;
-	    } else {
+	    rmamt_sync = RMAMT_SYNC_MAX;
+
+	    for (int i = 0 ; rmamt_sync_strings[i] ; ++i) {
+		if (0 == strcasecmp (optarg, rmamt_sync_strings[i])) {
+		    rmamt_sync = i;
+		    break;
+		}
+	    }
+
+	    if (RMAMT_SYNC_MAX == rmamt_sync) {
 		print_usage (name, true);	
 	    }
 
