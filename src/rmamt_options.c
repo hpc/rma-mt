@@ -30,6 +30,7 @@ char *rmamt_sync_strings[] = {
     [RMAMT_FLUSH_ALL] = "flush_all",
     [RMAMT_FLUSH_LOCAL] = "flush_local",
     [RMAMT_FLUSH_LOCAL_ALL] = "flush_local_all",
+    [RMAMT_FLUSH_THREAD] = "flush_thread"
     [RMAMT_SYNC_MAX] = NULL,
 };
 

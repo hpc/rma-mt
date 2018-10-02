@@ -56,6 +56,7 @@ static rmamt_fn_t rmamt_new_fns[RMAMT_OPERATIONS_MAX][RMAMT_SYNC_MAX] = {
         [RMAMT_FLUSH_ALL] = bw_put_flush_all_new,
         [RMAMT_FLUSH_LOCAL] = bw_put_flush_local_new,
         [RMAMT_FLUSH_LOCAL_ALL] = bw_put_flush_local_all_new,
+        [RMAMT_FLUSH_THREAD] = bw_put_flush_thread_new,
     },
     [RMAMT_GET] = {
         [RMAMT_LOCK_ALL] = bw_get_lock_all_new,
@@ -67,6 +68,7 @@ static rmamt_fn_t rmamt_new_fns[RMAMT_OPERATIONS_MAX][RMAMT_SYNC_MAX] = {
         [RMAMT_FLUSH_ALL] = bw_get_flush_all_new,
         [RMAMT_FLUSH_LOCAL] = bw_get_flush_local_new,
         [RMAMT_FLUSH_LOCAL_ALL] = bw_get_flush_local_all_new,
+        [RMAMT_FLUSH_THREAD] = bw_get_flush_thread_new,
     },
 };
 
@@ -212,7 +214,7 @@ int main(int argc,char *argv[])
             args[i].min_size = min_size;
             args[i].win = rmamt_win_per_thread ? win[i] : win[0];
             args[i].group = group;
-            args[i].all_sync = (RMAMT_ALL_FLUSH == rmamt_sync);
+            args[i].all_sync = (RMAMT_ALL_FLUSH == rmamt_sync || RMAMT_FLUSH_THREAD == rmamt_sync);
             args[i].target = !(rank & 1);
             args[i].comm = leader_comm;
 
@@ -482,4 +484,9 @@ DEFINE_ORIGIN_THREAD_FN(flush_local, get, MPI_Get, MPI_Win_lock (MPI_LOCK_SHARED
 DEFINE_ORIGIN_THREAD_FN(flush_local_all, put, MPI_Put, MPI_Win_lock (MPI_LOCK_SHARED, a->target, 0, a->win), (void) 0, MPI_Win_flush_local_all (a->win),
                         MPI_Win_unlock (a->target, a->win))
 DEFINE_ORIGIN_THREAD_FN(flush_local_all, get, MPI_Get, MPI_Win_lock (MPI_LOCK_SHARED, a->target, 0, a->win), (void) 0, MPI_Win_flush_local_all (a->win),
+                        MPI_Win_unlock (a->target, a->win))
+
+DEFINE_ORIGIN_THREAD_FN(flush_thread, put, MPI_Put, MPI_Win_lock (MPI_LOCK_SHARED, a->target, 0, a->win), (void) 0, MPI_Win_flush_thread (a->target, a->win),
+                        MPI_Win_unlock (a->target, a->win))
+DEFINE_ORIGIN_THREAD_FN(flush_thread, get, MPI_Get, MPI_Win_lock (MPI_LOCK_SHARED, a->target, 0, a->win), (void) 0, MPI_Win_flush_thread (a->target, a->win),
                         MPI_Win_unlock (a->target, a->win))
