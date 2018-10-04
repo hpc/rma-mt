@@ -226,7 +226,7 @@ int main(int argc,char *argv[])
             pthread_join(id[i], NULL);
         }
 
-        for (uint32_t j = min_size, step = 0 ; j <= max_size ; j <<= 1, ++step) {
+        for (uint64_t j = min_size, step = 0 ; j <= max_size ; j <<= 1, ++step) {
             double speed = 0.0, msg_rate = 0.0;
 
             for (int i = 0 ; i < rmamt_threads ; ++i) {
