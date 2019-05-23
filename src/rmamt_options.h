@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 #define MAX_THREADS 512
-#define RMAMT_MAX_SIZE 4194304
+#define RMAMT_MAX_SIZE (1 << 22)
 
 enum {
   RMAMT_PUT,
@@ -21,6 +21,10 @@ enum {
   RMAMT_LOCK,
   RMAMT_FLUSH,
   RMAMT_PSCW,
+  RMAMT_ALL_FLUSH,
+  RMAMT_FLUSH_ALL,
+  RMAMT_FLUSH_LOCAL,
+  RMAMT_FLUSH_LOCAL_ALL,
   RMAMT_SYNC_MAX,
 };
 

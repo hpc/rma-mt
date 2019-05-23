@@ -59,16 +59,29 @@ void rmamt_free (void *ptr, size_t size) {
 
 hwloc_topology_t topology;
 
+int shared_comm_size, shared_comm_rank;
+
 int rmamt_bind_init (void) {
+    MPI_Comm shared_comm;
+
     hwloc_topology_init (&topology);
     hwloc_topology_load (topology);
+
+    /* deterimine how many local ranks there are */
+    MPI_Comm_split_type (MPI_COMM_WORLD, MPI_COMM_TYPE_SHARED, 0, MPI_INFO_NULL, &shared_comm);
+    MPI_Comm_size (shared_comm, &shared_comm_size);
+    MPI_Comm_rank (shared_comm, &shared_comm_rank);
+
+    MPI_Comm_free (&shared_comm);
 
     return 0;
 }
 
 void rmamt_bind (int thread_id) {
     int ncores = hwloc_get_nbobjs_by_type (topology, HWLOC_OBJ_CORE);
-    int obj_id = thread_id % ncores;
+    int cores_per_rank = ncores < shared_comm_size ? 1 : ncores / shared_comm_size;
+    int core_base = (cores_per_rank * shared_comm_rank) % ncores;
+    int obj_id = core_base + thread_id % cores_per_rank;
     hwloc_obj_t obj = hwloc_get_obj_by_type (topology, HWLOC_OBJ_CORE, obj_id);
 
     if (NULL != obj) {
