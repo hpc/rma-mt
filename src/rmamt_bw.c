@@ -212,7 +212,7 @@ int main(int argc,char *argv[])
             args[i].min_size = min_size;
             args[i].win = rmamt_win_per_thread ? win[i] : win[0];
             args[i].group = group;
-            args[i].all_sync = (RMAMT_ALL_FLUSH == rmamt_sync);
+            args[i].all_sync = (RMAMT_ALL_FLUSH == rmamt_sync) || (RMAMT_FENCE == rmamt_sync);
             args[i].target = !(rank & 1);
             args[i].comm = leader_comm;
 
