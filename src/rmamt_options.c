@@ -76,7 +76,9 @@ static void print_usage (const char *name, bool failure)
 
 int rmamt_parse_options (const char *name, int argc, char *argv[])
 {
-    char c, *tmp;
+    char *tmp;
+    int c;
+
     const struct option options[] = {
 	{"win-per-thread", no_argument, NULL, 'w'},
 	{"max-size", required_argument, NULL, 'm'},
